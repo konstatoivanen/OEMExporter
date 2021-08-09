@@ -2,7 +2,12 @@
 
 A tool for generating GGX convoluted octahedron mapped textures from cylindrical hdr images.
 
-## Execution order
+## Input/Output Examples
+
+![Preview](T_SourceExample.jpgraw=true "Source Preview")
+![Preview](T_OutputExample.jpg?raw=true "Ouput Preview")
+
+## Execution Order
 - Load source ktx texture.
 - Create a destination texture with user specified count of mip levels.
   - Lower mip levels will be used to store higher levels of convolution.
@@ -16,7 +21,7 @@ A tool for generating GGX convoluted octahedron mapped textures from cylindrical
   - Encode integrated color into rgbm.
 - Read processed image back from gpu & save as ktx.
  
-## How to run
+## How To Run
 To run the program via terminal the following arguments need to be submitted.
 - Source texture file name.
 - Destination texture file name.
@@ -24,12 +29,12 @@ To run the program via terminal the following arguments need to be submitted.
 - A set of roughness levels.
   - As this will double as the number of mip levels the destination resolution might increase if the supplied one cannot support the desired amount of levels.  
 
-### An example command
+### An Example Command
 ```
 ./OEMExporter.exe Source.ktx Destination.ktx 512 "{0.1, 0.2, 0.5, 1.0}"
 ```
 
-## How to sample
+## How To Sample
 The following code snippet can be used to sample the generated image.
 ```
 uniform sampler2D _SceneOEM;
