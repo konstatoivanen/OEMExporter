@@ -4,7 +4,7 @@ A tool for generating GGX convoluted octahedron mapped textures from cylindrical
 
 ## Input/Output Examples
 
-![Preview](T_SourceExample.jpgraw=true "Source Preview")
+![Preview](T_SourceExample.jpg?raw=true "Source Preview")
 ![Preview](T_OutputExample.jpg?raw=true "Ouput Preview")
 
 ## Execution Order
