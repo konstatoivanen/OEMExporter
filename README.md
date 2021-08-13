@@ -73,9 +73,5 @@ vec3 SampleEnvironment(vec3 direction)
 - [HDRI Haven](https://hdrihaven.com)
 
 ## References
-- [GGX Importance Sampling](https://learnopengl.com/PBR/IBL/Specular-IBL)
-- [Fetching From Cubes and OctaHedrons](https://gpuopen.com/learn/fetching-from-cubes-and-octahedrons/)
-- [Octahedron Environment Maps](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.681.1522&rep=rep1&type=pdf)
-- [Faster Octahedron decoding](https://twitter.com/Stubbesaurus/status/937994790553227264)
-- [RGBM Encoding](http://graphicrants.blogspot.com/2009/04/rgbm-color-encoding.html)
-- [Hammersley Point Distribution](http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html)
+- [Depth-First Search](https://www.algosome.com/articles/maze-generation-depth-first.html)
+- [A*](https://en.wikipedia.org/wiki/A*_search_algorithm)
