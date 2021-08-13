@@ -4,22 +4,22 @@
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>T_CylinderTest T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>T_CylinderTest T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>T_CylinderTest T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>T_CylinderTest T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>

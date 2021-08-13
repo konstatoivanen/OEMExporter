@@ -3,7 +3,6 @@
 #include <vector>
 #include <algorithm>
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3.h>
 #include <GLAD/glad.h>
 #include <KTX/ktx.h>
 
@@ -150,7 +149,7 @@ struct ShaderSource
 	const char* source;
 };
 
-GLuint CompileShader(std::initializer_list<ShaderSource> sources)
+static GLuint CompileShader(std::initializer_list<ShaderSource> sources)
 {
 	auto program = glCreateProgram();
 
@@ -226,7 +225,7 @@ GLuint CompileShader(std::initializer_list<ShaderSource> sources)
 	return program;
 }
 
-GLuint LoadSourceKTX(const std::string& filepath)
+static GLuint LoadSourceKTX(const std::string& filepath)
 {
 	ktxTexture* kTexture;
 	GLenum target, glerror;
@@ -263,7 +262,7 @@ GLuint LoadSourceKTX(const std::string& filepath)
 	return sourceTextureId;
 }
 
-std::vector<float> ParseRoughnessValues(const char* input)
+static std::vector<float> ParseRoughnessValues(const char* input)
 {
 	std::vector<float> output;
 
@@ -288,7 +287,7 @@ std::vector<float> ParseRoughnessValues(const char* input)
 	return output;
 }
 
-void ProcessFileExtension(std::string& filepath)
+static void ProcessFileExtension(std::string& filepath)
 {
 	if (filepath.empty())
 	{
@@ -306,7 +305,7 @@ void ProcessFileExtension(std::string& filepath)
 	filepath = filepath.substr(0, pos) + ".ktx";
 }
 
-uint32_t GetNextPowerOf2(uint32_t value)
+static uint32_t GetNextPowerOf2(uint32_t value)
 {
 	value--;
 	value |= value >> 1;
