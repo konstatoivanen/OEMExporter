@@ -25,7 +25,7 @@ A tool for generating GGX convoluted octahedron mapped textures from cylindrical
 To run the program via terminal the following arguments need to be submitted.
 - Source texture file name.
 - Destination texture file name.
-- Destination encoding mode (wHDR or wRGBM)
+- Destination encoding mode (RGBM, RGB16F, RGB9E5)
 - Destination resolution (clampped to 2048).
 - A set of roughness levels.
   - As this will double as the number of mip levels the destination resolution might increase if the supplied one cannot support the desired amount of levels.  
@@ -80,4 +80,5 @@ vec3 SampleEnvironment(vec3 direction)
 - [Octahedron Environment Maps](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.681.1522&rep=rep1&type=pdf)
 - [Faster Octahedron decoding](https://twitter.com/Stubbesaurus/status/937994790553227264)
 - [RGBM Encoding](http://graphicrants.blogspot.com/2009/04/rgbm-color-encoding.html)
+- [RGB9E5 Encoding](https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_texture_shared_exponent.txt)
 - [Hammersley Point Distribution](http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html)

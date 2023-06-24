@@ -4,12 +4,12 @@
     <ShowAllFiles>true</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM wRGBM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM RGB9E5 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM wRGBM 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>SampleTexture T_Output_OEM RGB9E5 512 "{0.1, 0.25, 0.5, 1.0}"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
