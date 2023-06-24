@@ -25,6 +25,7 @@ A tool for generating GGX convoluted octahedron mapped textures from cylindrical
 To run the program via terminal the following arguments need to be submitted.
 - Source texture file name.
 - Destination texture file name.
+- Destination encoding mode (wHDR or wRGBM)
 - Destination resolution (clampped to 2048).
 - A set of roughness levels.
   - As this will double as the number of mip levels the destination resolution might increase if the supplied one cannot support the desired amount of levels.  
@@ -42,6 +43,7 @@ uniform sampler2D _SceneOEM;
 // As of now the hdr mutliplier is hardcoded to 8.0. This might be parameterized later.
 #define HDRFactor 8.0
 
+// If texture is rgbm encoded
 vec3 HDRDecode(vec4 hdr) { return vec3(hdr.rgb * hdr.a * HDRFactor); }
 
 vec2 OctaWrap(vec2 v) { return (1.0 - abs(v.yx)) * vec2(v.x >= 0.0 ? 1.0 : -1.0, v.y >= 0.0 ? 1.0 : -1.0); }

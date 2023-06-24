@@ -117,6 +117,109 @@ const static char* shader_compute =
 "    imageStore(_WriteTarget, coord, HDREncode(prefilteredColor));												\n"
 "}																												\n";
 
+const static char* shader_compute_hdr =
+"#version 450 core																								\n"
+"																												\n"
+"uniform float _Roughness;																						\n"
+"uniform uvec2 _Offset;																							\n"
+"uniform sampler2D _Source;																						\n"
+"layout(rgba16f) uniform writeonly image2D _WriteTarget;													    \n"
+"																												\n"
+"#define SAMPLE_COUNT 200000u																					\n"
+"																												\n"
+"vec3 OctaDecode(vec2 f)																						\n"
+"{																												\n"
+"    f = f * 2.0f - 1.0f;																						\n"
+"    vec3 n = vec3(f.x, 1.0f - abs(f.x) - abs(f.y), f.y);														\n"
+"    float t = max(-n.y, 0.0);																					\n"
+"    n.x += n.x >= 0.0f ? -t : t;																				\n"
+"    n.z += n.z >= 0.0f ? -t : t;																				\n"
+"    return normalize(n);																						\n"
+"}																												\n"
+"																												\n"
+"vec2 CylinderUV(vec3 direction)																				\n"
+"{																												\n"
+"    float angleh = (atan(direction.x, direction.z) + 3.14159265359f) * 0.15915494309f;							\n"
+"    float anglev = acos(dot(direction, vec3(0, 1, 0))) * 0.31830988618f;										\n"
+"    return vec2(angleh, anglev);																				\n"
+"}																												\n"
+"																												\n"
+"float RadicalInverse_VdC(uint bits)																			\n"
+"{																												\n"
+"    bits = (bits << 16u) | (bits >> 16u);																		\n"
+"    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);										\n"
+"    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);										\n"
+"    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);										\n"
+"    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);										\n"
+"    return float(bits) * 2.3283064365386963e-10;																\n"
+"}																												\n"
+"																												\n"
+"vec2 Hammersley(uint i, uint N)																				\n"
+"{																												\n"
+"    return vec2(float(i) / float(N), RadicalInverse_VdC(i));													\n"
+"}																												\n"
+"																												\n"
+"vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)														\n"
+"{																												\n"
+"    float a = roughness * roughness;																			\n"
+"																												\n"
+"    float phi = 2.0 * 3.14159265 * Xi.x;																		\n"
+"    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a * a - 1.0) * Xi.y));										\n"
+"    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);															\n"
+"																												\n"
+"    vec3 H;																									\n"
+"    H.x = cos(phi) * sinTheta;																					\n"
+"    H.y = sin(phi) * sinTheta;																					\n"
+"    H.z = cosTheta;																							\n"
+"																												\n"
+"    vec3 up = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);									\n"
+"    vec3 tangent = normalize(cross(up, N));																	\n"
+"    vec3 bitangent = cross(N, tangent);																		\n"
+"    vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z;												\n"
+"    return normalize(sampleVec);																				\n"
+"}																												\n"
+"																												\n"
+"layout(local_size_x = 4, local_size_y = 4, local_size_z = 1) in;												\n"
+"void main()																									\n"
+"{																												\n"
+"    vec2 size = vec2(imageSize(_WriteTarget).xy);																\n"
+"    ivec2 coord = ivec2(gl_GlobalInvocationID.xy + _Offset);													\n"
+"    																											\n"
+"    if (coord.x > size.x || coord.y > size.y)																	\n"
+"    {																											\n"
+"		return;																									\n"
+"    }																											\n"
+"    																											\n"
+"    vec2 uv = (coord + (0.5f.xx / size)) / size;																\n"
+"    vec3 N = OctaDecode(uv);																					\n"
+"    vec3 R = N;																								\n"
+"    vec3 V = R;																								\n"
+"																												\n"
+"    float totalWeight = 0.0;																					\n"
+"    vec3 prefilteredColor = 0.0f.xxx;																			\n"
+"																												\n"
+"    for (uint i = 0u; i < SAMPLE_COUNT; ++i)																	\n"
+"    {																											\n"
+"        vec2 Xi = Hammersley(i, SAMPLE_COUNT);																	\n"
+"        vec3 H = ImportanceSampleGGX(Xi, N, _Roughness);														\n"
+"        vec3 L = normalize(2.0 * dot(V, H) * H - V);															\n"
+"																												\n"
+"        float NdotL = max(dot(N, L), 0.0);																		\n"
+"																												\n"
+"        if (NdotL > 0.0)																						\n"
+"        {																										\n"
+"            vec2 cylinderuv = CylinderUV(L);																	\n"
+"            vec3 env = texture(_Source, cylinderuv).rgb;														\n"
+"            prefilteredColor += env * NdotL;																	\n"
+"            totalWeight += NdotL;																				\n"
+"        }																										\n"
+"    }																											\n"
+"																												\n"
+"    prefilteredColor /= totalWeight;																			\n"
+"																												\n"
+"    imageStore(_WriteTarget, coord, vec4(prefilteredColor, 1.0f));												\n"
+"}																												\n";
+
 const char* shader_vertex =
 " #version 450 core																								\n"
 " 																												\n"
@@ -320,7 +423,7 @@ static uint32_t GetNextPowerOf2(uint32_t value)
 
 int main(int argc, char* argv[])
 {
-	if (argc != 5)
+	if (argc != 6)
 	{
 		printf("Invalid number of arguments!");
 		return 0;
@@ -332,7 +435,7 @@ int main(int argc, char* argv[])
 	ProcessFileExtension(filepath);
 	ProcessFileExtension(savepath);
 
-	auto roughnessvalues = ParseRoughnessValues(argv[4]);
+	auto roughnessvalues = ParseRoughnessValues(argv[5]);
 	auto mipCount = roughnessvalues.size();
 
 	if (mipCount < 1)
@@ -341,7 +444,8 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	auto resolution = GetNextPowerOf2((uint32_t)std::stoi(argv[3]));
+	auto useHDR = strcmp(argv[3], "wHDR") == 0 || !(strcmp(argv[3], "wRGBM") == 0);
+	auto resolution = GetNextPowerOf2((uint32_t)std::stoi(argv[4]));
 	auto maxMip = (uint32_t)log2(resolution);
 
 	while (maxMip < mipCount)
@@ -359,7 +463,6 @@ int main(int argc, char* argv[])
 
 	if (!glfwInit())
 	{
-
 		printf("Failed to initialize glfw!");
 		return 0;
 	}
@@ -388,7 +491,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	auto shaderCompute = CompileShader({ {GL_COMPUTE_SHADER, shader_compute} });
+	auto shaderCompute = CompileShader({ {GL_COMPUTE_SHADER, useHDR ? shader_compute_hdr : shader_compute } });
 	auto shaderDisplay = CompileShader({ {GL_VERTEX_SHADER, shader_vertex}, {GL_FRAGMENT_SHADER, shader_fragment} });
 	auto sourceTexure = LoadSourceKTX(filepath);
 
@@ -401,7 +504,7 @@ int main(int argc, char* argv[])
 
 	GLuint targetTexture;
 	glCreateTextures(GL_TEXTURE_2D, 1, &targetTexture);
-	glTextureStorage2D(targetTexture, mipCount, GL_RGBA8, resolution, resolution);
+	glTextureStorage2D(targetTexture, mipCount, useHDR ? GL_RGBA16F : GL_RGBA8, resolution, resolution);
 
 	auto roughnessLocation = glGetUniformLocation(shaderCompute, "_Roughness");
 	auto offsetLocation = glGetUniformLocation(shaderCompute, "_Offset");
@@ -441,7 +544,7 @@ int main(int argc, char* argv[])
 		auto clusters = (uint32_t)ceil((resolution >> i) / 32.0f);
 
 		glUniform1f(roughnessLocation, roughnessvalues.at(i));
-		glBindImageTexture(0, targetTexture, i, true, 0, GL_WRITE_ONLY, GL_RGBA8);
+		glBindImageTexture(0, targetTexture, i, true, 0, GL_WRITE_ONLY, useHDR ? GL_RGBA16F : GL_RGBA8);
 
 		for (uint32_t x = 0; x < clusters; ++x)
 		for (uint32_t y = 0; y < clusters; ++y)
@@ -471,7 +574,7 @@ int main(int argc, char* argv[])
 	printf("--------------------------------\n");
 
 	ktxTextureCreateInfo createInfo;
-	createInfo.glInternalformat = GL_RGBA8;
+	createInfo.glInternalformat = useHDR ? GL_RGBA16F : GL_RGBA8;
 	createInfo.baseWidth = resolution;
 	createInfo.baseHeight = resolution;
 	createInfo.baseDepth = 1;
@@ -488,10 +591,10 @@ int main(int argc, char* argv[])
 
 	for (auto i = 0; i < mipCount; ++i)
 	{
-		auto size = 4ull * (resolution >> i) * (resolution >> i);
+		auto size = (useHDR ? 8ull : 4ull) * (resolution >> i) * (resolution >> i);
 		void* pixels = malloc(size);
 
-		glGetTextureImage(targetTexture, i, GL_RGBA, GL_UNSIGNED_BYTE, size, pixels);
+		glGetTextureImage(targetTexture, i, GL_RGBA, useHDR ? GL_HALF_FLOAT : GL_UNSIGNED_BYTE, size, pixels);
 		ktxTexture_SetImageFromMemory(genericTex, i, 0, 0, reinterpret_cast<const ktx_uint8_t*>(pixels), size);
 		
 		free(pixels);
@@ -500,7 +603,7 @@ int main(int argc, char* argv[])
 	ktxTexture_WriteToNamedFile(genericTex, savepath.c_str());
 	ktxTexture_Destroy(genericTex);
 
-	printf("Texture generation complete! Size: %ipx, Mip count: %i \n", resolution, mipCount);
+	printf("Texture generation complete! Size: %ipx, Mip count: %i \n", (int32_t)resolution, (int32_t)mipCount);
 
 	glDeleteVertexArrays(1, &vertexArrayObject);
 	glDeleteTextures(1, &targetTexture);
